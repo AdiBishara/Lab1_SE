@@ -3,10 +3,10 @@ public class User implements Comparable<User> {
     private String password;
 
     /*
-     * Constructor that validates and creates a new User
-     * username - The user's email address
-     * password - The user's secret password
-     * Returns a new User instance
+     * Instantiates a new User after validating credentials
+     * username - the email string to be processed
+     * password - candidate password string matching validation rules
+     * Returns the finalized User object
      */
     public User(String username, String password) throws Exception {
         setUsername(username);
@@ -14,19 +14,15 @@ public class User implements Comparable<User> {
     }
 
     /*
-     * Validates the format and length of the username
-     * username - The email string to validate and set
-     * Returns void
+     * Validates the format and bounds of the email username
+     * username - the candidate username string
+     * Returns nothing
      */
     private void setUsername(String username) throws Exception {
         if (username.length() > 50) {
             throw new Exception("Username is too long, try something shorter");
         }
 
-        // Allowed characters based on assignment details:
-        // Part 1: characters, ints, and the special keys - + % _
-        // Part 2: separated by @, can contain characters, ints and special keys - .
-        // Part 3: separated by ., at least 2 characters
         String regex = "^[a-zA-Z0-9\\-\\+\\%_]+@[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,}$";
         if (!username.matches(regex)) {
             throw new Exception("Please enter a valid Email as username");
@@ -36,9 +32,9 @@ public class User implements Comparable<User> {
     }
 
     /*
-     * Validates the length and character contents of the password
-     * password - The string password to validate and set
-     * Returns void
+     * Confirms the string meets length and strict characters criteria
+     * password - the candidate password string
+     * Returns nothing
      */
     private void setPassword(String password) throws Exception {
         if (password.length() < 8) {
@@ -48,7 +44,6 @@ public class User implements Comparable<User> {
             throw new Exception("Your password is too long, try a shorter one");
         }
 
-        // Must contain one char, one int and one special char
         boolean hasChar = false;
         boolean hasInt = false;
         boolean hasSpecial = false;
@@ -74,28 +69,27 @@ public class User implements Comparable<User> {
     }
 
     /*
-     * Gets the username of the user
-     * parameters: none
-     * Returns the username as a string
+     * Retrieves the current validated username
+     * No parameters
+     * Returns the username string
      */
     public String getUsername() {
         return username;
     }
 
     /*
-     * Gets the password of the user
-     * parameters: none
-     * Returns the password as a string
+     * Retrieves the current validated password
+     * No parameters
+     * Returns the password string
      */
     public String getPassword() {
         return password;
     }
 
-    // Sorting by username alphabetically 
     /*
-     * Compares this user with another based on their username alphabetically
-     * other - The other User object to compare against
-     * Returns negative if this username is less, zero if equal, positive if greater
+     * Compares two users alphabetically by their usernames
+     * other - the secondary User to evaluate against
+     * Returns the lexical comparison integer result
      */
     @Override
     public int compareTo(User other) {
@@ -103,9 +97,9 @@ public class User implements Comparable<User> {
     }
 
     /*
-     * Formats the user as a space-separated string of username and password
-     * parameters: none
-     * Returns the formatted string representation of the user
+     * Formats the username and password with a space delimiter
+     * No parameters
+     * Returns the space delimited string output
      */
     @Override
     public String toString() {
