@@ -22,7 +22,6 @@ public class UsersApp {
                     continue;
                 }
 
-                // Collapse any extraneous spaces; take only the first two tokens
                 String[] parts = line.split("\\s+", 2);
 
                 if (parts.length < 2 || parts[0].isEmpty() || parts[1].isEmpty()) {
@@ -31,7 +30,7 @@ public class UsersApp {
                 }
 
                 String username = parts[0];
-                String password = parts[1].trim(); // trim any trailing spaces from password field
+                String password = parts[1].trim();
 
                 try {
                     User user = new User(username, password);
