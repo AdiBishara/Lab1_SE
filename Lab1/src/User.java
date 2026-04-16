@@ -44,24 +44,8 @@ public class User implements Comparable<User> {
             throw new Exception("Your password is too long, try a shorter one");
         }
 
-        boolean hasChar = false;
-        boolean hasInt = false;
-        boolean hasSpecial = false;
-        String allowedSpecials = "!@#$%^&*()_+";
-
-        for (char c : password.toCharArray()) {
-            if (Character.isLetter(c)) {
-                hasChar = true;
-            } else if (Character.isDigit(c)) {
-                hasInt = true;
-            } else if (allowedSpecials.indexOf(c) != -1) {
-                hasSpecial = true;
-            } else {
-                throw new Exception("Please enter a valid password");
-            }
-        }
-
-        if (!hasChar || !hasInt || !hasSpecial) {
+        String regex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%\\^&*()_+])[a-zA-Z\\d!@#$%\\^&*()_+]+$";
+        if (!password.matches(regex)) {
             throw new Exception("Please enter a valid password");
         }
 
@@ -87,9 +71,9 @@ public class User implements Comparable<User> {
     }
 
     /*
-     * Compares two users alphabetically by their usernames
+     * Compares two users by ASCII value of their usernames
      * other - the secondary User to evaluate against
-     * Returns the lexical comparison integer result
+     * Returns the ASCII comparison integer result
      */
     @Override
     public int compareTo(User other) {

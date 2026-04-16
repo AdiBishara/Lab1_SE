@@ -6,13 +6,17 @@ import java.util.Scanner;
 
 public class UsersApp {
     /*
-     * Driver method verifying passwords and usernames from a file 
-     * args - runtime arguments
+     * Driver method verifying passwords and usernames from a file
+     * args - args[0] is the path to the input file containing username-password pairs
      * Returns nothing
      */
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Usage: java UsersApp <filename>");
+            return;
+        }
         ArrayList<User> users = new ArrayList<>();
-        File file = new File("user.txt");
+        File file = new File(args[0]);
 
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
@@ -36,14 +40,14 @@ public class UsersApp {
                     }
                 } else if (parts.length == 1) {
                     try {
-                        User user = new User(parts[0], ""); 
+                        new User(parts[0], "");
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Error: user.txt file not found. Ensure it is placed in the project root directory.");
+            System.out.println("Error: file '" + args[0] + "' not found. Ensure the path is correct.");
         }
 
         Collections.sort(users);
