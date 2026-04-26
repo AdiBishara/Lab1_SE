@@ -6,7 +6,7 @@
  * - Opens the package to javafx.fxml so FXML can reflectively access controllers
  * - Exports the package so JavaFX runtime can instantiate the Application subclass
  */
-module com.swelabs.lab2 {
+module com.swelabs.gcmlogin {
     requires javafx.controls;
     requires javafx.fxml;
 
