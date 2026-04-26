@@ -1,0 +1,2 @@
+# Module descriptor for Lab 2 JavaFX application.
+# Grants JavaFX runtime access to this module's classes (required for FXML reflection).
