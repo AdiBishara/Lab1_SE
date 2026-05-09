@@ -12,134 +12,173 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
-/**
- * Controller for the Login screen (login.fxml).
- * Handles user input validation and screen transition to the Welcome screen.
- *
- * Responsibilities:
- *   - Receive the validated user list and the primary Stage from Main.java
- *   - Respond to the Login button click (requirement 2.2 / 2.3)
- *   - Show an inline error label on failed login (requirement 2.3)
- *   - Load welcome.fxml and swap the scene on successful login (requirement 2.3)
+/*
+ * Controller for the Login screen.
+ * parameters: none
+ * Returns nothing
  */
 public class LoginController {
 
-    /* ---- FXML-injected UI components (IDs must match login.fxml) ---- */
+    /* ---- FXML-injected UI components (fx:id values must match login.fxml) ---- */
 
-    /** Text field where the user types their username (email). */
+    /** Text field where the user types their email username. */
     @FXML
     private TextField usernameField;
 
-    /** Password field where the user types their password (input is masked). */
+    /** Masked password field. */
     @FXML
     private PasswordField passwordField;
 
-    /** Label shown in red when login fails; hidden initially. */
+    /** Red error label shown on failed login; hidden by default. */
     @FXML
     private Label errorLabel;
 
-    /* ---- Data / state passed in from Main ---- */
+    /* ---- State injected by Main before the stage is shown ---- */
 
-    /** List of valid users loaded from user.txt. */
-    private ArrayList<User> users;
+    /**
+     * Validated users loaded from user.txt.
+     * Initialized to an empty list so findUser() never throws NullPointerException
+     * even if setUsers() is somehow skipped.
+     */
+    private ArrayList<User> users = new ArrayList<>();
 
-    /** Reference to the primary stage, used to swap scenes. */
+    /** The primary Stage — needed to swap scenes on successful login. */
     private Stage stage;
 
+    /* ------------------------------------------------------------------ */
+    /*  JavaFX lifecycle                                                    */
+    /* ------------------------------------------------------------------ */
+
     /*
-     * Called by Main.java to inject the validated user list before the screen is shown.
-     * users - the ArrayList of valid User objects read from user.txt
+     * Called automatically by FXMLLoader after all @FXML fields are injected.
+     * parameters: none
+     * Returns nothing
+     */
+    @FXML
+    private void initialize() {
+        usernameField.textProperty().addListener((observable, oldValue, newValue) -> hideError());
+        passwordField.textProperty().addListener((observable, oldValue, newValue) -> hideError());
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Setters called by Main.java                                         */
+    /* ------------------------------------------------------------------ */
+
+    /*
+     * Injects the validated user list before the screen is shown.
+     * users - ArrayList of valid User objects read from user.txt
+     * Returns nothing
      */
     public void setUsers(ArrayList<User> users) {
-        this.users = users;
+        // Defensive: if null is passed, fall back to an empty list
+        this.users = (users != null) ? users : new ArrayList<>();
     }
 
     /*
-     * Called by Main.java to inject the primary stage reference.
+     * Injects the primary Stage reference so this controller can swap scenes.
      * stage - the JavaFX Stage that owns this scene
+     * Returns nothing
      */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /* ------------------------------------------------------------------ */
+    /*  Event handlers (wired in login.fxml)                               */
+    /* ------------------------------------------------------------------ */
+
     /*
-     * Event handler wired to the Login button in login.fxml.
-     * Reads the username and password fields, searches the user list,
-     * and either transitions to the Welcome screen or shows an error.
+     * Handles a click on the Login button.
+     * parameters: none
+     * Returns nothing
      */
     @FXML
     private void handleLogin() {
-        String username = usernameField.getText().trim();
-        String password = passwordField.getText().trim();
+        String enteredUsername = usernameField.getText().trim();
+        String enteredPassword = passwordField.getText().trim();
 
-        // Guard: empty fields
-        if (username.isEmpty() || password.isEmpty()) {
+        // Guard: reject empty fields immediately
+        if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
             showError("Please enter both username and password.");
             return;
         }
 
-        // Search for a matching user in the validated list
-        User matchedUser = findUser(username, password);
+        User matchedUser = findUser(enteredUsername, enteredPassword);
 
         if (matchedUser != null) {
-            // Requirement 2.3: valid user → open Welcome screen
+            // Requirement 2.3: credentials match → open Welcome screen
             openWelcomeScreen(matchedUser);
         } else {
-            // Requirement 2.3: no match → show inline error
+            // Requirement 2.3: no match → show inline error (do not reveal which field is wrong)
             showError("Invalid username or password. Please try again.");
         }
     }
 
+    /* ------------------------------------------------------------------ */
+    /*  Private helpers                                                     */
+    /* ------------------------------------------------------------------ */
+
     /*
-     * Searches the user list for a user whose username AND password both match.
-     * username - the string entered in the username field
-     * password - the string entered in the password field
-     * Returns the matching User, or null if none is found
+     * Searches the user list for an exact match on both username and password.
+     * enteredUsername - the trimmed string from the username field
+     * enteredPassword - the trimmed string from the password field
+     * Returns the matching User, or null if no match is found
      */
-    private User findUser(String username, String password) {
-        for (User u : users) {
-            if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                return u;
+    private User findUser(String enteredUsername, String enteredPassword) {
+        for (User user : users) {
+            if (user.getUsername().equals(enteredUsername)
+                    && user.getPassword().equals(enteredPassword)) {
+                return user;
             }
         }
         return null;
     }
 
     /*
-     * Loads welcome.fxml, passes the matched user to its controller,
-     * and replaces the current scene on the primary stage.
-     * matchedUser - the authenticated User object
+     * Loads welcome.fxml, passes the authenticated user to its controller.
+     * matchedUser - the successfully authenticated User
+     * Returns nothing
      */
     private void openWelcomeScreen(User matchedUser) {
         try {
-            FXMLLoader loader = new FXMLLoader(
+            FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/com/swelabs/lab2/welcome.fxml")
             );
-            Parent welcomeRoot = loader.load();
+            Parent welcomeRoot = fxmlLoader.load();
 
-            // Pass the authenticated user to the WelcomeController
-            WelcomeController welcomeController = loader.getController();
+            // Pass the authenticated user so WelcomeController can personalize the message
+            WelcomeController welcomeController = fxmlLoader.getController();
             welcomeController.setUser(matchedUser);
 
-            // Swap the scene on the existing stage (requirement 2.3 / assignment diagram)
-            stage.setTitle("GCM System — Welcome");
+            // Replace the scene on the same Stage (per requirement 2.3 / assignment diagram)
+            stage.setTitle("GCM System \u2014 Welcome");
             stage.setScene(new Scene(welcomeRoot, 420, 320));
 
-            // Requirement 2.4: X on the welcome screen also exits the application
-            stage.setOnCloseRequest(event -> Platform.exit());
+            // Requirement 2.4: X on the welcome screen also terminates the program
+            stage.setOnCloseRequest(closeEvent -> Platform.exit());
 
-        } catch (Exception e) {
-            showError("Error loading welcome screen: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception loadException) {
+            showError("Failed to load the welcome screen. Please restart the application.");
+            loadException.printStackTrace();
         }
     }
 
     /*
-     * Displays an error message in the errorLabel and makes it visible.
+     * Displays an error message in the error label and makes it visible.
      * message - the human-readable error string to display
+     * Returns nothing
      */
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    /*
+     * Hides the error label.
+     * parameters: none
+     * Returns nothing
+     */
+    private void hideError() {
+        errorLabel.setVisible(false);
     }
 }

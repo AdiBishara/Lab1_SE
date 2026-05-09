@@ -1,10 +1,9 @@
 package com.swelabs.lab2;
 
-/**
+/*
  * Represents a system user with a validated email username and password.
- * Validation rules are identical to Lab 1:
- *   - Username: valid email format, max 50 characters
- *   - Password: 8-12 characters, must contain a letter, a digit, and a special character
+ * parameters: none
+ * Returns nothing
  */
 public class User implements Comparable<User> {
 
@@ -15,7 +14,7 @@ public class User implements Comparable<User> {
      * Instantiates a new User after validating both credentials.
      * username - the email string to be processed
      * password - candidate password string matching validation rules
-     * Throws Exception if either field fails validation
+     * Returns nothing
      */
     public User(String username, String password) throws Exception {
         setUsername(username);
@@ -25,7 +24,7 @@ public class User implements Comparable<User> {
     /*
      * Validates the format and length of the email username.
      * username - the candidate username string
-     * Throws Exception if the username is too long or not a valid email format
+     * Returns nothing
      */
     private void setUsername(String username) throws Exception {
         if (username.length() > 50) {
@@ -43,7 +42,7 @@ public class User implements Comparable<User> {
     /*
      * Confirms the password meets length and character-composition criteria.
      * password - the candidate password string
-     * Throws Exception if the password is too short, too long, or missing required character types
+     * Returns nothing
      */
     private void setPassword(String password) throws Exception {
         if (password.length() < 8) {
@@ -64,6 +63,7 @@ public class User implements Comparable<User> {
 
     /*
      * Retrieves the validated username.
+     * parameters: none
      * Returns the username string
      */
     public String getUsername() {
@@ -72,6 +72,7 @@ public class User implements Comparable<User> {
 
     /*
      * Retrieves the validated password.
+     * parameters: none
      * Returns the password string
      */
     public String getPassword() {
@@ -90,6 +91,8 @@ public class User implements Comparable<User> {
 
     /*
      * Returns a space-separated representation: "username password".
+     * parameters: none
+     * Returns space-separated representation
      */
     @Override
     public String toString() {
